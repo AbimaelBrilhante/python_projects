@@ -1,5 +1,7 @@
 import sqlite3
-#import pandas as pd
+import pandas as pd
+import csv
+import os
 
 print('[1] - Cadastrar Produto \n' 
       '[2] - Cadastrar Entrada de Produto \n' 
@@ -10,6 +12,8 @@ print('[1] - Cadastrar Produto \n'
       '[7] - Excluir Produto \n' 
       '[8] - Excluir Entrada/Saida \n' 
       '[9] - Exportar Ficha de Estoque \n')
+
+
 
 class Inventario:
 
@@ -83,9 +87,15 @@ class Inventario:
 
     def exportar_ficha_de_estoque(self):
         self.cursor.execute('SELECT * FROM inventario_relatorio')
+        with open("Relatorio de Inventario.csv", "w") as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=";")
+            csv_writer.writerow([i[0] for i in self.cursor.description])
+            csv_writer.writerows(self.cursor)
+        dirpath = os.getcwd() + "/Relatorio de Inventario.csv"
+        print("Dados exportados com sucesso para {}".format(dirpath))
         for linha in self.cursor.fetchall():
             print(linha)
-            #linha.to_excel("saida.xlsx", index=False)
+
 
     def fechar_conexao(self):
         self.cursor.close()
